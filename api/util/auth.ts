@@ -6,10 +6,17 @@ import { AuthChecker } from "type-graphql";
 
 env.config();
 
+interface User {
+	id: string;
+	email: string;
+	role: string;
+	permissions: string[];
+}
+
 export interface Context {
 	req: Request;
 	res: Response;
-	user: Object | null;
+	user: User | null;
 }
 
 export function signJwt(object: Object, options?: SignOptions | undefined) {
@@ -54,13 +61,6 @@ export const authChecker: AuthChecker<Context> = (
 	}
 	//roles exists but no user in the context
 	if (!user) return false;
-
-	//check if user role matches the defined role
-	if (roles.some((role) => user.role === role)) return true;
-
-	//check if user permissions property contains some defined role
-	if (roles.some((role) => role === "IS_OWN_USER"))
-		return args.id.toString() === user.id;
 
 	//no roles matched
 	return false;

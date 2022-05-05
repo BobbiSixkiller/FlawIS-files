@@ -26,8 +26,9 @@ async function main() {
 	});
 
 	const app = Express();
+
 	app.use(graphqlUploadExpress());
-	app.use(Express.static("public"));
+	app.use("/public", Express.static("public"));
 
 	//Create Apollo server
 	const server = new ApolloServer({
@@ -42,15 +43,12 @@ async function main() {
 
 	await server.start();
 
-	server.applyMiddleware({
-		app,
-		path: "/graphql",
-	});
+	server.applyMiddleware({ app });
 
-	app.listen({ port: process.env.PORT || 5001 }, () =>
+	app.listen({ port: process.env.PORT || 5002 }, () =>
 		console.log(
 			`🚀 Server ready and listening at ==> http://localhost:${
-				process.env.PORT || 5001
+				process.env.PORT || 5002
 			}${server.graphqlPath}`
 		)
 	);

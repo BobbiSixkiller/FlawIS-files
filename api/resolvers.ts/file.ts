@@ -1,4 +1,4 @@
-import { Arg, Mutation, Resolver } from "type-graphql";
+import { Arg, Authorized, Mutation, Resolver } from "type-graphql";
 import { GraphQLUpload } from "graphql-upload";
 import { FileType, Upload } from "./types/file";
 import { createWriteStream } from "fs";
@@ -8,12 +8,13 @@ import { UserInputError } from "apollo-server-core";
 
 @Resolver()
 export class FileResolver {
-	@Mutation(() => Boolean)
+	@Authorized()
+	@Mutation(() => String)
 	async uploadFile(
 		@Arg("file", () => GraphQLUpload)
 		{ createReadStream, filename, mimetype }: Upload,
-		@Arg("type") type: FileType
-	): Promise<string | boolean> {
+		@Arg("type", () => FileType) filetype: FileType
+	): Promise<string> {
 		if (
 			mimetype != "application/pdf" &&
 			mimetype !=
@@ -26,15 +27,24 @@ export class FileResolver {
 			);
 		}
 
-		const url = `/${type.toLowerCase()}s/${
-			uuid() + "-" + filename.toLowerCase().split(" ").join("-")
-		}`;
+		const url =
+			filetype +
+			"/" +
+			uuid() +
+			"-" +
+			filename.toLowerCase().split(" ").join("-");
 
 		return new Promise(async (resolve, reject) =>
 			createReadStream()
 				.pipe(createWriteStream(path.join(process.cwd(), "/public", url)))
-				.on("finish", () => resolve(`${process.env.BASE_URL + url}`))
-				.on("error", () => reject(false))
+				.on("finish", () =>
+					resolve(
+						`${
+							process.env.BASE_URL || "http://localhost:5000/" + "public/" + url
+						}`
+					)
+				)
+				.on("error", () => reject(new Error("File upload failed!")))
 		);
 	}
 }
