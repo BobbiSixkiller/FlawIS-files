@@ -105,5 +105,4 @@ typings/
 # typescript js output
 .dist
 
-.public/documents/
-.public/images/
+.public
