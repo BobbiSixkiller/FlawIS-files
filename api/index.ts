@@ -16,13 +16,9 @@ async function main() {
 	//Build schema
 	const schema = await buildFederatedSchema({
 		resolvers: [FileResolver],
-		// use document converting middleware
 		globalMiddlewares: [],
-		// use ObjectId scalar mapping
 		emitSchemaFile: true,
 		authChecker,
-		//disabled validation for dev purposes
-		//validate: false,
 	});
 
 	const app = Express();

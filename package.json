@@ -21,6 +21,7 @@
 	"homepage": "https://github.com/BobbiSixkiller/FlawIS-files#readme",
 	"dependencies": {
 		"@apollo/federation": "^0.25.1",
+		"apollo-graphql": "^0.9.7",
 		"apollo-server": "^3.6.7",
 		"apollo-server-core": "^3.6.7",
 		"apollo-server-express": "^3.6.7",
